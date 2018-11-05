@@ -102,17 +102,17 @@ class CharLoopModel(nn.Module):
         self.l_in = nn.Linear(n_fac, n_hidden)
         self.l_hidden = nn.Linear(n_hidden, n_hidden)
         self.l_out = nn.Linear(n_hidden, vocab_size)
-        
+
     def forward(self, *cs):
         bs = cs[0].size(0)
         h = V(torch.zeros(bs, n_hidden).cuda())
         for c in cs:
             inp = F.relu(self.l_in(self.e(c)))
             h = F.tanh(self.l_hidden(h+inp))
-        
+
         return F.log_softmax(self.l_out(h), dim=-1)
 ```
-In hidden state to hidden state transition weight matrices we still tend to use tanh. (why?)
+In hidden state to hidden state transition weight matrices we still tend to use tanh. **Because relu is not bounded, so we'll could have gradient explosion problems.**
 
 Maybe we shouldn't add h+inp together. The reason is that the input state and the hidden state are different kind of things. The input state is the encoding of the character and h is the encoding of the series of characters so far. So adding them together is going to potentially going to loose information. What if we concatenate this together?
 
@@ -124,7 +124,7 @@ class CharLoopConcatModel(nn.Module):
         self.l_in = nn.Linear(n_fac+n_hidden, n_hidden)
         self.l_hidden = nn.Linear(n_hidden, n_hidden)
         self.l_out = nn.Linear(n_hidden, vocab_size)
-        
+
     def forward(self, *cs):
         bs = cs[0].size(0)
         h = V(torch.zeros(bs, n_hidden).cuda())
@@ -132,7 +132,7 @@ class CharLoopConcatModel(nn.Module):
             inp = torch.cat((h, self.e(c)), 1)
             inp = F.relu(self.l_in(inp))
             h = F.tanh(self.l_hidden(inp))
-        
+
         return F.log_softmax(self.l_out(h), dim=-1)
 ```
 
@@ -149,13 +149,13 @@ class CharRnn(nn.Module):
         self.e = nn.Embedding(vocab_size, n_fac)
         self.rnn = nn.RNN(n_fac, n_hidden)
         self.l_out = nn.Linear(n_hidden, vocab_size)
-        
+
     def forward(self, *cs):
         bs = cs[0].size(0)
         h = V(torch.zeros(1, bs, n_hidden))  # We also need a starting point
         inp = self.e(torch.stack(cs))
         outp,h = self.rnn(inp, h)  # We pass in the starting poing. 
-        
+
         return F.log_softmax(self.l_out(outp[-1]), dim=-1)
 ```
 
