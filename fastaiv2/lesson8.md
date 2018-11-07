@@ -233,3 +233,4 @@ Here pytorch `max` over dimention 1  give us two things:
 **TODO**
 1. Understanding receptive field. [Medium post](https://medium.com/mlreview/a-guide-to-receptive-field-arithmetic-for-convolutional-neural-networks-e0f514068807)
 2. [Notas](https://medium.com/@hiromi_suenaga/deep-learning-2-part-2-lesson-10-422d87c3340c)
+3. [Notation as a Tool of Thought - Kenneth Iverson](http://delivery.acm.org/10.1145/1290000/1283935/a1979-iverson.pdf?ip=189.216.105.102&id=1283935&acc=OPEN&key=4D4702B0C3E38B35%2E4D4702B0C3E38B35%2E4D4702B0C3E38B35%2E6D218144511F3437&__acm__=1541568201_d7bbe656cecae38ab67149f3356a6169)
